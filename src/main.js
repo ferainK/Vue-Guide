@@ -1,4 +1,4 @@
 import {createApp} from 'vue'
-import App from './App.vue'
+import App from './App.vue'   // resolve 설정했다면, .vue 생략 가능
 
-createApp(App).mount(#app)  //html의 시작점을 vue로 설정
+createApp(App).mount('#app')
