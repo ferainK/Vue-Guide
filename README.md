@@ -149,3 +149,34 @@ export default {
   <img src="~assets/logo.png" alt="Hello">
 </template>
 ```
+
+### 3. VUE 문법
+#### 1) 기본구성
+```vue
+<template>
+
+</template>
+
+<script>
+import *** from '***'
+
+export: default {
+  components:{},
+
+  data(): {
+    return{}
+  },
+
+  methods: {
+    function() {}
+  }
+}
+
+</script>
+
+<style lang="scss">
+
+</style>
+```
+
+#### 2)
