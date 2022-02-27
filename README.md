@@ -24,10 +24,15 @@ $ npm i vue@next               //vue 문법 해석
 $ npm i -D vue-loader@next     //webpack 활용
 $ npm i -D vue-style-loader    //webpack 활용
 $ npm i -D @vue/compiler-sfc   //vue → html/css/js 변환
+
 $ npm i -D file-loader         //webpack 활용(특정한 파일을 읽어서 출력)
+
 $ npm i -D eslint              //다른 vue 불러오는 확장 기능
 $ npm i -D eslint-plugin-vue   //vue에서 eslint 사용하기 위함
 $ npm i -D babel-eslint        //babel-eslint 연동
+
+//유용한 기능
+$ npm i -D shortid             //고유 ID 생성툴
 ```
 #### ② 디렉토리 설정
 ```c
@@ -118,6 +123,7 @@ createApp({App}).mount('#app')
 ```
 
 #### ⑥ App.vue / HelloWorld.vue 작성 (예시)
+> `<template>`는 HTML로 변환되지 않는다는 점 참고!
 ```vue
 //App.vue
 <template>
@@ -186,18 +192,24 @@ unmounted() {this.xxx}
 3\)v-bind : 선택자 명 지정   [(약어) v-bind: → :]
 ```js
 //기본식
-v-bind:class="xxx"
+v-bind: class = "xxx"
 
 //약어
-:class="xxx"
+:class = "xxx"
 ```
+> 동적 클래스 (true일때만 클래스명 지정)
+> ```js
+> :class = "{[class명]: [true/false], ... }"
+> ```
+
 4\) v-on : 이벤트 수신        [(약어) v-on: → @]
+> 자세한 이벤트 핸들링은 12항 참고
 ```js
 //기본식
-v-on:click
+v-on:click="[함수명]"
 
 //약어
-@click
+@click="[함수명]"
 ```
 ※ 속성(clinck, class, id 등)을 매개변수로 표현하는 것도 가능 <br/>
 ```js
@@ -217,10 +229,12 @@ v-bind:[attr]="app"
 <h1> 값: {{count}} </h1>
 ```
 
-### 5) 반복문
+### 5) 반복문 
+> index 생략 가능하다. (괄호 불요)
+
 HTML
 ```html
-<li v-for="fruit in fruits"
+<li v-for="(fruit, index) in fruits"
       :key="fruit">
       {{ fruit }}</li>
 ```
@@ -233,15 +247,53 @@ export default {
       fruits: ['사과', '배', '포도']}}}
 ```
 
-### 6) 조건문
+> [한걸음더] 배열 데이터 사용하기 <br>
+> HTML
+> ```html
+> <li v-for="fruit in fruits"
+>       :key="fruit.id">
+>       {{ fruit.name }}</li>
+> ```
+> 
+> JS
+> ```js
+> export default {
+>   data() {
+>     return {
+>       fruits: ['사과', '배', '포도']}},
+>   computed:{
+>     newFruits() {
+>       return this.fruits.map((fruit, index) => {
+>         return {
+>           id: index,
+>           name: fruit,            
+>         }})}}}
+> ```
+
+> [한걸음더] 반복생성 시 독립된 id 부여하기 <br>
+> JS
+> ```js
+> import shortid from 'shortid'
+> id: shortid.generate()
+> ```
+### 6) 조건문 (조건부 렌더링)
+> 주의사항! <br>
+> `v-show`도 조건문과 유사하게 사용되는데, `v-show`는 CSS의 display값만 변환시켜주므로, 렌더링 유무에 차이가 있다. <br>
+> 자주 update되는 요소(element)라면 `v-show`를 사용하는게 리소스 관리에 유리하다.
 ```html
-  <section v-if="fruits.length > 0">
+  <template v-if="fruits.length > 0">
     <h1>fruit's list</h1>
-  </section>
+  </template>
+  <template v-if-else="fruits.length > 5">
+    <h1>Too many fruits!!!!</h1>
+  </template>
+  <template v-else>
+    <h1>Nothing</h1>
+  </template>
   ```
 ### 7) data
-> template에 return하기 위한 데이터 <br>
-> 재선언 가능 (getter/setter)
+> \- template에 return하기 위한 데이터 <br>
+> \- 재선언 가능 (getter/setter)
 ```js
 data() {
     return {
@@ -251,6 +303,10 @@ data() {
 ```
 
 ### 8) methods : 매소드(함수/funciton)
+> 함수 호출 시, 매개변수가 없다면 괄호 생략 가능 <br>
+> 단, 여러 함수를 동시 호출하는 경우 괄호 생략 불가능
+
+<br>
 
 ### 9) computed (데이터 값/value)
 > 1\. cashing 기능이 있어 연산 최소화하기 위해 사용됨. <br>
@@ -284,5 +340,49 @@ add() {
   this.reverseFruits += '!!' }
 ```
 
+### 10) watch
+> 특정 데이터(computed 포함)에 대해 변경되는 경우 실행되는 함수
+> `변경된 데이터`는 인수에 명시, `기존 데이터`는 this. 로 명시
+```js
+watch: {
+  [데이터]('[new 데이터]']) {
+    console.log('[old 데이터]', →, '[new 데이터]') }}
+```
 
+### 11) 리스트 렌더링
+> ① 변이 매소드 <br>
+`push()` : 가장 마지막에 데이터 추가<br>
+`pop()` : 가장 마지막 데이터 반환<br>
+`shift()` : 가장 앞 데이터 반환<br>
+`unshift()` : 가장 앞에 데이터 추가<br>
+`splice()` : 데이터 넣고/빼고/삭제 <br>
+`sort()` : 배열 정렬<br>
+`reverse()` : 배열 반전<br>
+
+> ② 교체 매소드 (재렌더링 하지는 않는다.) <br>
+`filter()` : 배열 추출<br>
+`concat()` : 배열 연결<br>
+`slice()` : 배열 자르기 <br>
+
+### 12) 이벤트 핸들러 (매소드=함수)
+HTML
+```html
+@click="handler(hi, $event)"  /* defalut는 '$event' */
+```
+JS
+```js
+methods: {
+  handler(msg) {
+    console.log(msg)    //'hi' 뿐만 아니라, 발생한 event에 대한 다양한 정보를 확인할 수 있다. (마우스 위치 등)
+  }
+}
+```
+
+> 이벤트 수식어 <br>
+> `.stop` <br>
+> `.prevent` <br>
+> `.capture` <br>
+> `.self` <br>
+> `.once` <br>
+> `.passive` <br>
 

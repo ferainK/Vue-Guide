@@ -7,6 +7,12 @@
   <!-- 반복문 -->
   <Fruits/>
 
+  <!--클래스 -->
+  <br>
+  <h1 :class = "{ active: isActive }"
+  @click="activate">
+  TEST!!</h1>
+
 </template>
 
 // JS
@@ -20,13 +26,17 @@ export default {
   },
   data() {
     return {
-      count: 2
+      count: 2, 
+      isActive: true,
     }
   },
   methods: {
     add() {
       this.count += " (확인 완료!)"
-    }
+    },
+    activate() {
+      this.isActive = !this.isActive
+    },
   },
   beforeCreate() {
     console.log('Before Create!', this.count)
@@ -39,11 +49,10 @@ export default {
   },
   beforeCreate() {
     console.log('Before Create!')
-  }
+  },
 }
 </script>
 
-// SCSS
-<style lang="scss">
+<style scoped>
 
 </style>
