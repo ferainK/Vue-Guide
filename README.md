@@ -379,7 +379,7 @@ methods: {
 ```
 
 > 이벤트 수식어 <br>
-> `.stop` <br>
+> `.stop` : <br>
 > `.prevent` <br>
 > `.capture` <br>
 > `.self` <br>
