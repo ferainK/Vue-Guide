@@ -1,41 +1,49 @@
+// HTML
 <template>
-  <h1 @click="increase">{{ message }} {{count}}</h1>
-  <h1 v-if="count > 4">4보다 크넹!</h1>
-  <ul>
-    <Fruit
-    v-for="fruit in fruits" 
-    :key="fruit" 
-    :name="fruit">
-      {{ fruit }}
-    </Fruit>
-  </ul>
-  <HelloWorld/>
+  <!-- 디렉티브 -->
+  <h1 @click.once="add">값 : {{ count }}</h1>
+  <p :class="test"> 클랙스 지정 </p>
+  <br>
+  <!-- 반복문 -->
+  <Fruits/>
+
 </template>
 
+// JS
 <script>
-import HelloWorld from '~/components/HelloWorld.vue'
-import Fruit from '~/components/Fruit.vue'
+console.log('start!')
 
+import Fruits from '~/components/Fruits.vue'
 export default {
   components: {
-    HelloWorld,
-    Fruit: Fruit  //Fruit로도 작성 가능
+    Fruits
   },
   data() {
-    return{
-      message: '클릭해보시겠어요? : ',
-      count: 0,
-      fruits: ['사과', '토마토','바나나']
-    } 
-  },
-  methods: {
-    increase() {
-      this.count += 1
+    return {
+      count: 2
     }
   },
+  methods: {
+    add() {
+      this.count += " (확인 완료!)"
+    }
+  },
+  beforeCreate() {
+    console.log('Before Create!', this.count)
+  },
+  created() {
+    console.log('Created!', this.count)
+  },
+  mounted() {
+    console.log('Mounted!')
+  },
+  beforeCreate() {
+    console.log('Before Create!')
+  }
 }
 </script>
 
+// SCSS
 <style lang="scss">
 
 </style>

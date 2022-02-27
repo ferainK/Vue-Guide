@@ -3,6 +3,9 @@ const HtmlPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const {VueLoaderPlugin} = require('vue-loader')
 
+//Surface proX ARM Processor에서 발생하는 경고 문구
+const webpack = require('webpack');
+
 module.exports = {
   resolve: {
     extensions: ['.js', '.vue'],
@@ -60,11 +63,16 @@ module.exports = {
       ]
     }),
     new VueLoaderPlugin(),
+    // Surface ProX ARM processor에서 발생하는 경고 문구
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: true,      //default: true
+      __VUE_PROD_DEVTOOLS__: false,   //default: false
+    }),
   ],
 
   devServer: {
     host: 'localhost',
     port: 8080,
     hot: true,
-  }
+  },
 }
