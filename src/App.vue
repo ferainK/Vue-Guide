@@ -13,6 +13,9 @@
   @click="activate">
   TEST!!</h1>
 
+  <!-- input -->
+  <input type="text" value="안녕" class="inputcommend" />
+
 </template>
 
 // JS
@@ -28,6 +31,7 @@ export default {
     return {
       count: 2, 
       isActive: true,
+      msg: '맞냐 이거?'
     }
   },
   methods: {

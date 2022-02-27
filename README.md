@@ -185,11 +185,11 @@ unmounted() {this.xxx}
 ```html
 <p [Directive]> xxx </p>
 ```
-1\)v-once : 반복 실행 허용 안함 (한 번만 도작) <br/>
-2\)v-html : 변수에 html 형태로 입력하면, html 문법에 따라 출력<br/>
+1\) `v-once` : 반복 실행 허용 안함 (한 번만 도작) <br/>
+2\) `v-html` : 변수에 html 형태로 입력하면, html 문법에 따라 출력<br/>
 (本 변수에 html 형태로 입력하면, 텍스트 그대로 출력됨) <br/>
 
-3\)v-bind : 선택자 명 지정   [(약어) v-bind: → :]
+3\) `v-bind` : ① 선택자 등의 CLASS/ID 지정 시, ② 속성(attr)의 key|value가 변수인 경우  [(약어) v-bind: → :]
 ```js
 //기본식
 v-bind: class = "xxx"
@@ -202,7 +202,7 @@ v-bind: class = "xxx"
 > :class = "{[class명]: [true/false], ... }"
 > ```
 
-4\) v-on : 이벤트 수신        [(약어) v-on: → @]
+4\) `v-on` : 이벤트 수신        [(약어) v-on: → @]
 > 자세한 이벤트 핸들링은 12항 참고
 ```js
 //기본식
@@ -378,11 +378,14 @@ methods: {
 }
 ```
 
-> 이벤트 수식어 <br>
-> `.stop` : <br>
-> `.prevent` <br>
-> `.capture` <br>
-> `.self` <br>
-> `.once` <br>
-> `.passive` <br>
+> 이벤트 수식어 (chainning 가능)<br>
+> `.prevent` : 명령 제한 (중단)<br>
+> `.stop` : 이벤트 버블링 방지 (자식을 클릭했을 떄, 자식 클릭 이후 부모도 클릭되는 기본 구조 방지)<br>
+> `.capture` : 이벤트 버블링 역순자식을 클릭했을 때, 부모 먼저 클릭되고 자식이 클릭<br>
+> `.capture.stop` : 자식을 클릭해도 부모만 클릭되는 효과 <br>
+> `.self` : 이벤트 버블링 대상에서 제외 (자식을 클릭하더라도 부모는 클릭되는 효과가 없고, 부모 본인을 클릭했을때만 이벤트 발생) <br>
+> `.once` : 한 번의 명령만 이행 <br>
+> `.passive` : HTML과 JS를 독립시켜 실행 (부하 저감, 대략 5배 이상 성능 향상 효과, 단, `.prevent`와 함께 사용하면 망해버림) <br>
+> > `@keydown.[key.key....] = "handler"` : `key`+`key`+`...`가 입력되는 경우 "handler" 실행 <br>
+> > `@input="handler"` : 기본적으로 대부분의 데이터는 단방향 바인딩(get  only)이지만, 이벤트 핸들링을 통해 양반향 바인딩(반응성, get/set)으로 만들 수 있다.
 
