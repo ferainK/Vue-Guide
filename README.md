@@ -189,7 +189,7 @@ unmounted() {this.xxx}
 2\) `v-html` : 변수에 html 형태로 입력하면, html 문법에 따라 출력<br/>
 (本 변수에 html 형태로 입력하면, 텍스트 그대로 출력됨) <br/>
 
-3\) `v-bind` : ① 선택자 등의 CLASS/ID 지정 시, ② 속성(attr)의 key|value가 변수인 경우  [(약어) v-bind: → :]
+3\) `v-bind` : ① 선택자 등의 CLASS/ID 지정 시, ② 속성(attr)의 key|value가 변수인 경우  [`(약어)` `v-bind:` → `:`]
 ```js
 //기본식
 v-bind: class = "xxx"
@@ -202,7 +202,7 @@ v-bind: class = "xxx"
 > :class = "{[class명]: [true/false], ... }"
 > ```
 
-4\) `v-on` : 이벤트 수신        [(약어) v-on: → @]
+4\) `v-on` : 이벤트 수신        [`(약어)` `v-on:` → `@`]
 > 자세한 이벤트 핸들링은 12항 참고
 ```js
 //기본식
@@ -223,10 +223,23 @@ v-bind:[attr]="app"
     attr="id"
   }
 ```
-
+5\) `v-model ` : input 반응성 기능
+- .number / .string : input 요소 데이터타입(type of) 지정
+- .trim : 빈공간 허용하지 않음 (빈공간 자동 제거, 렌더 안함)
 ### 4) 보간법
 ```html
 <h1> 값: {{count}} </h1>
+```
+6\) `v-slot` : `App.vue`와 `Component.vue`를 서로 연결  [`(약어)` `v-slot` → `#`]
+```html
+<!-- App.vue -->
+<h1 v-slot:icon>연동연동</h1>
+<h1 v-slot:text>연결연결</h1>
+```
+```html
+<!-- Component.vue -->
+<slot name="icon">기본값</slot>
+<slot name="text">기본값</slot>
 ```
 
 ### 5) 반복문 
@@ -387,5 +400,215 @@ methods: {
 > `.once` : 한 번의 명령만 이행 <br>
 > `.passive` : HTML과 JS를 독립시켜 실행 (부하 저감, 대략 5배 이상 성능 향상 효과, 단, `.prevent`와 함께 사용하면 망해버림) <br>
 > > `@keydown.[key.key....] = "handler"` : `key`+`key`+`...`가 입력되는 경우 "handler" 실행 <br>
-> > `@input="handler"` : 기본적으로 대부분의 데이터는 단방향 바인딩(get  only)이지만, 이벤트 핸들링을 통해 양반향 바인딩(반응성, get/set)으로 만들 수 있다.
+> > `@input="handler"` : 기본적으로 대부분의 데이터는 단방향 바인딩(get  only)이지만, 이벤트 핸들링을 통해 양반향 바인딩(반응성, get/set)으로 만들 수 있다. <br>
+> > ```js
+> > methed: {
+> >  handler(event) {
+> >    this.msg = event.target.value}}
+> > ```
+> > > `[tip]` <br>
+> > > * `@input="handler"`을 인라인 형태인 `@input="msg=$event.target.value"` 혹은 디렉티브인 `v-model="msg"`으로도 표현할 수 있다. <br>
+> > > * (단, `v-model`을 통해 한글을 입력받을 경우 글자가 완성 되어야 input으로 입력됨)
+> > > * `@input` 대신 `@change`가 더 많이 사용됨. `@change="msg"`는 `v-model.lazy="msg"`로 표현함
+
+### 13) 컴포넌트
+#### ① props (외부에서 받는 데이터)
+Component.vue
+```html
+<!-- HTML -->
+<div
+  :class="{large: large}" <!--> {large로 단축 표현 가능 -->
+  :style="{ backgroundcolor: color }"
+  class="btn">
+  <slot>기본값</slot>
+</div>
+```
+```js
+//Javascript
+export default {
+  props: {
+    color:{
+      type: String,
+      default: 'gray',
+    },
+    large:{
+      type: Boolean,
+      default: false    }}}
+```
+App.vue
+```html
+<!-- HTML -->
+<Mybtn :color="#333"> Okay </Mybtn>
+```
+
+#### ② 속성(attr) 상속
+- 기본적으로는 `Component.vue`에는 `1개`의 `최상위 요소(root element)`만 선언 가능 <br>
+- `Component.vue`에는 `여러 개`의 `최상위 요소(root element)`가 있는 경우, `$attrs`를 통해 직접 상속 가능 <br>
+\- Component.vue
+```html
+<!-- HTML -->
+<!-- #1: 모든 요소 상속 -->
+<h1 v-bind="$attrs"></h1>
+
+<!-- #2: 일부 요소 상속 -->
+<h1 :class="$attrs.class" :style="$attrs.style"></h1>
+```
+- 상속을 거부하는 방법 (`App.vue`에서 `Component.vue`로 속성 상속 불가) <br>
+\- Component.vue
+```js
+//Javascript
+export default {
+  inheritAttrs: false }
+```
+- 이벤트의 상속 (emits) : `Component.vue`의 `디렉티브`는 `v-on` 수식어 이고, `App.vue`의 `디렉티브`는 `사용자 정의`로 선언 <br>
+
+\- Component.vue (`v-on 수식어`)
+```html
+<!-- HTML -->
+<!--  더블클릭 => doubleClick이라는 이벤트와 event 반환 -->
+<div @dblclick="$emit('doubleClick', $event)"> ABC </div>
+```
+```js
+//Javascript
+export default {
+  //이벤트 명시적 선언
+    emits: [
+    'doubleClick' ]}
+```
+\- App.vue  (`사용자 정의`)
+```html
+<!-- HTML -->
+<!-- 저장된 이벤트 실행 => "log" 실행 -->
+<Mybtn @doubleClick="log"> Okay </Mybtn>
+```
+```js
+//Javascript
+export default {
+  methods: {
+    log(event) {
+      console.log('clicked!!', event)  }}}
+```
+
+### 14) Provide / Inject (반응성 없음)
+> 기본적으로 `import`는 `자식 컴퓨넌트`에 데이터 전달됨 <br>
+> `provide - inject`를 사용하면 `하위 컴퓨넌트`에도 데이터 전달 가능
+> 객체 데이터를 반환함 <br>
+> 반응성 없음 (재렌더링 없음) : computed(() => {})으로 반응성 대체 가능
+
+\- ComponentChild.vue (`v-on 수식어`)
+```html
+<!-- HTML -->
+{{ msg }}
+```
+```js
+//Javascript
+export default {
+  props:{
+    msg:{
+      type: String,
+      default: ''   }}
+```
+
+\- ComponentParent.vue (`v-on 수식어`)
+```html
+<!-- HTML -->
+<Child :msg="msg"/>
+```
+```js
+//Javascript
+import Child from '~/components/Child'
+export default {
+  components: {
+    Child },
+  props:{
+    msg:{
+      type: String,
+      default: ''   }}
+```
+
+\- App.vue  (`사용자 정의`)
+```html
+<!-- HTML -->
+<Parent :msg="message"/>
+```
+```js
+//Javascript
+export default {
+  components: {
+    Parent },
+  data() {
+    return{
+      message: 'hello?' }}}
+```
+
+### 15) Refs (class/id 이외의 추가 간편 선택자!)
+```html
+<!-- HTML -->
+<Hello ref="hello"/>
+```
+```js
+//Javascript (import 생략)
+export default {
+  components: {
+    Hello  },
+  mounted() {
+    console.log(this.$refs.hello.$el)
+    //외부에서 가져왔기 때문에 HTML형태의 객체 데이터임.
+    //따라서 $el을 하면 HTML 내용 원문이 출력됨
+  }
+```
+
+## 4. API (setup 매소드)
+### 1) setup 사용 유무 차이 (코드 최적화 용도로 사용됨)
+```js
+// 변경전
+export default {
+  data() {
+    return {
+      count: 0     }},
+  method: {
+    increase() {
+      this.count += 1     }},
+  computed: {
+    doubleCount() {
+      return conunt.value * 2
+    }
+  },
+  watch: {
+    count(newValue) {
+      console.log(newValue)   }}}
+  mounted() {
+    console.log(this.count)
+  }
+
+// 변경후
+import { ref, computed, watch, onMounted } from 'vue'   //computed도 들어감
+export default {
+  inheriAttrs: false,
+  props: {
+    type: String,
+    defalut: 'gray'
+  },
+  setup(props, context) {                 //setup은 반응성이 없음 (ref로 반응성 부여)
+    let count = ref(0)      //ref는 객체 데이터!
+    function increase() {
+      count.value += 1}
+    const doubleCount = computed(() =>{
+      return conunt.value * 2
+    })
+    watch(count.value, (newValue) => {
+      console.log(newValue)
+    }) 
+    onMounted(()=>{
+      console.log(count.value)
+      console.log(props.color)
+      console.log(context.attrs)
+    })
+    return {
+      count,
+      increase,
+      doubleCount    }}}
+```
+
+
 
